@@ -3,3 +3,10 @@ node_modules/
 uploads/*
 !uploads/.gitkeep
 npm-debug.log*
+node_modules/
+.env
+uploads/*
+!uploads/.gitkeep
+logs/*
+!logs/.gitkeep
+npm-debug.log*
