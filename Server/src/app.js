@@ -6,6 +6,8 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 
+const { notFound, errorHandler } = require("./middleware/errorHandler");
+
 const app = express();
 
 // --- Security & parsing middleware ---
@@ -49,20 +51,10 @@ app.get("/api/health", (req, res) => {
 // app.use('/api/coupons', require('./routes/couponRoutes'));
 // app.use('/api/users', require('./routes/userRoutes'));
 // app.use('/api/admin/stats', require('./routes/adminStatsRoutes'));
+// app.use('/api/ai', require('./routes/aiRoutes'));
 
-// --- 404 handler for unmatched API routes ---
-app.use("/api", (req, res) => {
-  res.status(404).json({ message: `Route ${req.originalUrl} not found` });
-});
-
-// --- Central error handler ---
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  console.error("[error]", err.stack || err.message);
-  const status = err.statusCode || 500;
-  res.status(status).json({
-    message: err.message || "Internal server error",
-  });
-});
+// --- 404 + centralized error handling (from middleware/errorHandler.js) ---
+app.use(notFound);
+app.use(errorHandler);
 
 module.exports = app;
