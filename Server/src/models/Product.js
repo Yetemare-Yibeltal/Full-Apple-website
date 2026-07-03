@@ -1,16 +1,38 @@
 const mongoose = require("mongoose");
 
+// One purchasable configuration of a product (e.g. "256GB / Natural Titanium")
 const variantSchema = new mongoose.Schema(
   {
-    label: { type: String, required: true, trim: true }, // e.g. "128GB / Midnight"
-    color: { type: String, trim: true },
+    label: { type: String, required: true, trim: true },
+    colorName: { type: String, trim: true },
+    colorHex: { type: String, trim: true, default: "#1d1d1f" }, // drives the color-swatch UI
     storage: { type: String, trim: true },
     price: { type: Number, required: true, min: 0 },
-    compareAtPrice: { type: Number, min: 0, default: null }, // for showing a strikethrough price
+    compareAtPrice: { type: Number, min: 0, default: null }, // strikethrough price when on sale
     stock: { type: Number, required: true, min: 0, default: 0 },
     sku: { type: String, trim: true },
   },
   { _id: true },
+);
+
+// A single technical spec row, e.g. { label: "Chip", value: "A18 Pro" }
+// Grouped so the frontend can render an Apple-style spec table by section.
+const specSchema = new mongoose.Schema(
+  {
+    group: { type: String, required: true, trim: true }, // e.g. "Display", "Camera", "Performance"
+    label: { type: String, required: true, trim: true }, // e.g. "Chip"
+    value: { type: String, required: true, trim: true }, // e.g. "A18 Pro chip"
+  },
+  { _id: false },
+);
+
+const mediaSchema = new mongoose.Schema(
+  {
+    type: { type: String, enum: ["image", "video"], default: "image" },
+    url: { type: String, required: true }, // /uploads/<filename> or external CDN url
+    alt: { type: String, trim: true, default: "" },
+  },
+  { _id: false },
 );
 
 const productSchema = new mongoose.Schema(
@@ -29,11 +51,21 @@ const productSchema = new mongoose.Schema(
       trim: true,
       index: true,
     },
+    brand: {
+      type: String,
+      trim: true,
+      default: "Apple",
+    },
     category: {
       type: String,
       required: true,
       enum: ["iphone", "ipad", "mac", "watch", "tv", "music", "accessories"],
       index: true,
+    },
+    subcategory: {
+      type: String, // e.g. "iPhone 15 Pro" line within the "iphone" category
+      trim: true,
+      default: "",
     },
     tagline: {
       type: String,
@@ -45,16 +77,20 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     highlights: {
-      type: [String],
+      type: [String], // short bullet points shown under the hero (max ~5)
       default: [],
     },
-    images: {
-      type: [String], // stored as /uploads/<filename> paths
+    media: {
+      type: [mediaSchema],
       default: [],
     },
     modelUrl: {
-      type: String, // optional path to a .glb/.gltf 3D asset for the product stage
+      type: String, // path to a .glb/.gltf asset for the 3D product stage
       default: null,
+    },
+    specs: {
+      type: [specSchema],
+      default: [],
     },
     basePrice: {
       type: Number,
@@ -64,6 +100,18 @@ const productSchema = new mongoose.Schema(
     variants: {
       type: [variantSchema],
       default: [],
+    },
+    onSale: {
+      type: Boolean,
+      default: false,
+    },
+    releaseDate: {
+      type: Date,
+      default: Date.now,
+    },
+    salesCount: {
+      type: Number,
+      default: 0, // incremented on order completion, powers "bestseller" sorting
     },
     featured: {
       type: Boolean,
@@ -77,10 +125,29 @@ const productSchema = new mongoose.Schema(
       average: { type: Number, default: 0, min: 0, max: 5 },
       count: { type: Number, default: 0 },
     },
+    seo: {
+      metaTitle: { type: String, trim: true, default: "" },
+      metaDescription: { type: String, trim: true, default: "" },
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
   },
   { timestamps: true },
 );
 
 productSchema.index({ name: "text", description: "text", tagline: "text" });
+productSchema.index({ category: 1, isActive: 1 });
+productSchema.index({ featured: 1, isActive: 1 });
+
+// Virtual: cheapest available price across variants, falling back to basePrice
+productSchema.virtual("startingPrice").get(function getStartingPrice() {
+  if (!this.variants || this.variants.length === 0) return this.basePrice;
+  return Math.min(...this.variants.map((v) => v.price));
+});
+
+productSchema.set("toJSON", { virtuals: true });
 
 module.exports = mongoose.model("Product", productSchema);
