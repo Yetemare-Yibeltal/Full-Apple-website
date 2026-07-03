@@ -17,13 +17,10 @@ const router = express.Router();
 
 const productValidationRules = [
   body("name").trim().notEmpty().withMessage("Product name is required"),
-  body("slug")
-    .trim()
-    .notEmpty()
-    .withMessage("Slug is required")
-    .isSlug()
-    .withMessage("Slug must be URL-safe"),
-  body("category").isIn(PRODUCT_CATEGORIES).withMessage("Invalid category"),
+  body("slug").trim().notEmpty().withMessage("Slug is required"),
+  body("category")
+    .isIn(PRODUCT_CATEGORIES)
+    .withMessage(`Category must be one of: ${PRODUCT_CATEGORIES.join(", ")}`),
   body("description").trim().notEmpty().withMessage("Description is required"),
   body("basePrice")
     .isFloat({ min: 0 })
