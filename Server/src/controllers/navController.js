@@ -1,5 +1,5 @@
 const NavSection = require("../models/NavSection");
-const asyncHandler = require("../utils/asyncHandler");
+const asyncHandler = require("../../utils/asyncHandler");
 
 /**
  * @route   GET /api/nav

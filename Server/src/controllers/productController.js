@@ -1,5 +1,5 @@
 const Product = require("../models/Product");
-const asyncHandler = require("../utils/asyncHandler");
+const asyncHandler = require("../../utils/asyncHandler");
 const { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE } = require("../config/constants");
 
 /**
