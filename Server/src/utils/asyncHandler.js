@@ -1,7 +1,6 @@
 const User = require("../models/User");
 const asyncHandler = require("../utils/asyncHandler");
 const generateToken = require("../utils/generateToken");
-
 /**
  * @route   POST /api/auth/register
  * @access  Public
