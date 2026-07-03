@@ -50,11 +50,9 @@ const addToCart = asyncHandler(async (req, res) => {
       return res.status(404).json({ message: "Selected variant not found." });
     }
     if (variant.stock < quantity) {
-      return res
-        .status(400)
-        .json({
-          message: `Only ${variant.stock} left in stock for this option.`,
-        });
+      return res.status(400).json({
+        message: `Only ${variant.stock} left in stock for this option.`,
+      });
     }
     price = variant.price;
     variantLabel = variant.label;

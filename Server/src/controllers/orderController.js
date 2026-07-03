@@ -41,11 +41,9 @@ const createOrder = asyncHandler(async (req, res) => {
     if (item.variantId) {
       const variant = product.variants.id(item.variantId);
       if (!variant || variant.stock < item.quantity) {
-        return res
-          .status(400)
-          .json({
-            message: `${product.name} (${item.variantLabel}) is out of stock.`,
-          });
+        return res.status(400).json({
+          message: `${product.name} (${item.variantLabel}) is out of stock.`,
+        });
       }
     }
 

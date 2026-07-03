@@ -15,12 +15,10 @@ const validateCoupon = asyncHandler(async (req, res) => {
   const coupon = await Coupon.findOne({ code: String(code).toUpperCase() });
 
   if (!coupon || !coupon.isValidNow()) {
-    return res
-      .status(400)
-      .json({
-        valid: false,
-        message: "This coupon is invalid or has expired.",
-      });
+    return res.status(400).json({
+      valid: false,
+      message: "This coupon is invalid or has expired.",
+    });
   }
 
   if (subtotal < coupon.minOrderAmount) {
