@@ -1,29 +1,15 @@
-const Product = require("../models/Product");
-const asyncHandler = require("../../utils/asyncHandler");
-const { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE } = require("../config/constants");
+const Product = require('../models/Product');
+const asyncHandler = require('../utils/asyncHandler');
+const { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE } = require('../config/constants');
 
-/**
- * @route   GET /api/products
- * @access  Public
- * Supports: ?category=iphone&search=pro&featured=true&onSale=true
- *           &sort=price_asc|price_desc|newest|bestseller&page=1&limit=12
- */
 const getProducts = asyncHandler(async (req, res) => {
-  const {
-    category,
-    search,
-    featured,
-    onSale,
-    sort,
-    page = 1,
-    limit = DEFAULT_PAGE_SIZE,
-  } = req.query;
+  const { category, search, featured, onSale, sort, page = 1, limit = DEFAULT_PAGE_SIZE } = req.query;
 
   const query = { isActive: true };
 
   if (category) query.category = category;
-  if (featured === "true") query.featured = true;
-  if (onSale === "true") query.onSale = true;
+  if (featured === 'true') query.featured = true;
+  if (onSale === 'true') query.onSale = true;
   if (search) query.$text = { $search: search };
 
   const sortMap = {
@@ -35,10 +21,7 @@ const getProducts = asyncHandler(async (req, res) => {
   const sortBy = sortMap[sort] || { createdAt: -1 };
 
   const pageNum = Math.max(1, parseInt(page, 10) || 1);
-  const pageSize = Math.min(
-    MAX_PAGE_SIZE,
-    Math.max(1, parseInt(limit, 10) || DEFAULT_PAGE_SIZE),
-  );
+  const pageSize = Math.min(MAX_PAGE_SIZE, Math.max(1, parseInt(limit, 10) || DEFAULT_PAGE_SIZE));
 
   const [products, total] = await Promise.all([
     Product.find(query)
@@ -59,32 +42,20 @@ const getProducts = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @route   GET /api/products/:slug
- * @access  Public
- */
 const getProductBySlug = asyncHandler(async (req, res) => {
-  const product = await Product.findOne({
-    slug: req.params.slug,
-    isActive: true,
-  });
+  const product = await Product.findOne({ slug: req.params.slug, isActive: true });
 
   if (!product) {
-    return res.status(404).json({ message: "Product not found." });
+    return res.status(404).json({ message: 'Product not found.' });
   }
 
   res.status(200).json({ product });
 });
 
-/**
- * @route   GET /api/products/:slug/related
- * @access  Public
- * Returns other active products in the same category, excluding this one.
- */
 const getRelatedProducts = asyncHandler(async (req, res) => {
   const product = await Product.findOne({ slug: req.params.slug });
   if (!product) {
-    return res.status(404).json({ message: "Product not found." });
+    return res.status(404).json({ message: 'Product not found.' });
   }
 
   const related = await Product.find({
@@ -96,23 +67,15 @@ const getRelatedProducts = asyncHandler(async (req, res) => {
   res.status(200).json({ products: related });
 });
 
-/**
- * @route   POST /api/products
- * @access  Private/Admin
- */
 const createProduct = asyncHandler(async (req, res) => {
   const product = await Product.create({
     ...req.body,
     createdBy: req.user._id,
   });
 
-  res.status(201).json({ message: "Product created.", product });
+  res.status(201).json({ message: 'Product created.', product });
 });
 
-/**
- * @route   PUT /api/products/:id
- * @access  Private/Admin
- */
 const updateProduct = asyncHandler(async (req, res) => {
   const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
@@ -120,30 +83,20 @@ const updateProduct = asyncHandler(async (req, res) => {
   });
 
   if (!product) {
-    return res.status(404).json({ message: "Product not found." });
+    return res.status(404).json({ message: 'Product not found.' });
   }
 
-  res.status(200).json({ message: "Product updated.", product });
+  res.status(200).json({ message: 'Product updated.', product });
 });
 
-/**
- * @route   DELETE /api/products/:id
- * @access  Private/Admin
- * Soft delete: flips isActive to false rather than removing the document,
- * so past orders that reference this product still resolve correctly.
- */
 const deleteProduct = asyncHandler(async (req, res) => {
-  const product = await Product.findByIdAndUpdate(
-    req.params.id,
-    { isActive: false },
-    { new: true },
-  );
+  const product = await Product.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
 
   if (!product) {
-    return res.status(404).json({ message: "Product not found." });
+    return res.status(404).json({ message: 'Product not found.' });
   }
 
-  res.status(200).json({ message: "Product removed.", product });
+  res.status(200).json({ message: 'Product removed.', product });
 });
 
 module.exports = {
