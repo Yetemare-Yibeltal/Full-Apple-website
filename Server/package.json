@@ -1,4 +1,15 @@
-"dependencies": {
+{
+  "name": "apple-store-server",
+  "version": "1.0.0",
+  "description": "Backend API for the Apple Store storefront and admin console",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed": "node src/utils/seed.js"
+  },
+  "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
@@ -14,3 +25,10 @@
     "multer": "^1.4.5-lts.1",
     "winston": "^3.13.0"
   },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
