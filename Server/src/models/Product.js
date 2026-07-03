@@ -129,6 +129,14 @@ const productSchema = new mongoose.Schema(
       metaTitle: { type: String, trim: true, default: "" },
       metaDescription: { type: String, trim: true, default: "" },
     },
+    keywords: {
+      type: [String], // natural-language terms (e.g. "best camera", "lightweight") used by AI search matching
+      default: [],
+    },
+    aiGenerated: {
+      description: { type: Boolean, default: false },
+      tagline: { type: Boolean, default: false },
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
