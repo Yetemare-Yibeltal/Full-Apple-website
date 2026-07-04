@@ -2,6 +2,12 @@ const User = require("../models/User");
 const asyncHandler = require("../utils/asyncHandler");
 const generateToken = require("../utils/generateToken");
 
+/**
+ * @route   POST /api/auth/register
+ * @access  Public
+ * Registers a new customer account. Admin accounts are created only via
+ * the seed script (utils/seed.js), never through this public endpoint.
+ */
 const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -22,6 +28,10 @@ const register = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @route   POST /api/auth/login
+ * @access  Public
+ */
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -43,6 +53,10 @@ const login = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @route   POST /api/auth/logout
+ * @access  Private
+ */
 const logout = asyncHandler(async (req, res) => {
   const cookieName = process.env.COOKIE_NAME || "apple_store_token";
   res.clearCookie(cookieName, {
@@ -53,6 +67,12 @@ const logout = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Logged out successfully." });
 });
 
+/**
+ * @route   GET /api/auth/me
+ * @access  Private
+ * Returns the currently authenticated user. req.user is set by the
+ * `protect` middleware, which already excludes the password field.
+ */
 const getMe = asyncHandler(async (req, res) => {
   res.status(200).json({ user: req.user });
 });
