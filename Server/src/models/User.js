@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 const addressSchema = new mongoose.Schema(
   {
@@ -57,6 +58,16 @@ const userSchema = new mongoose.Schema(
       type: [addressSchema],
       default: [],
     },
+    resetPasswordToken: {
+      type: String,
+      select: false,
+      default: null,
+    },
+    resetPasswordExpire: {
+      type: Date,
+      select: false,
+      default: null,
+    },
   },
   { timestamps: true },
 );
@@ -74,10 +85,31 @@ userSchema.methods.comparePassword = function comparePassword(candidate) {
   return bcrypt.compare(candidate, this.password);
 };
 
+/**
+ * Generates a random reset token, stores its HASHED version on the user
+ * (so a leaked database never exposes usable tokens), and returns the
+ * PLAIN version to be emailed to the user - it can only be used once
+ * and only within 30 minutes.
+ */
+userSchema.methods.generatePasswordResetToken =
+  function generatePasswordResetToken() {
+    const plainToken = crypto.randomBytes(32).toString("hex");
+
+    this.resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(plainToken)
+      .digest("hex");
+    this.resetPasswordExpire = Date.now() + 30 * 60 * 1000; // 30 minutes
+
+    return plainToken;
+  };
+
 // Strip sensitive fields whenever a user doc is serialized to JSON
 userSchema.set("toJSON", {
   transform: (_doc, ret) => {
     delete ret.password;
+    delete ret.resetPasswordToken;
+    delete ret.resetPasswordExpire;
     delete ret.__v;
     return ret;
   },
