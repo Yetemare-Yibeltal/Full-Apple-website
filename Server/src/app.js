@@ -53,7 +53,7 @@ app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/admin/stats", require("./routes/adminStatsRoutes"));
 app.use("/api/ai", require("./routes/aiRoutes"));
 
-// --- 404 + centralized error handling (from middleware/errorHandler.js) ---
+app.use("/api/upload", require("./routes/uploadRoutes"));
 app.use(notFound);
 app.use(errorHandler);
 
