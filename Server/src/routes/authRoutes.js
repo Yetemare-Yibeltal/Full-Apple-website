@@ -6,6 +6,8 @@ const {
   login,
   logout,
   getMe,
+  forgotPassword,
+  resetPassword,
 } = require("../controllers/authController");
 const { protect } = require("../middleware/auth");
 const validate = require("../middleware/validate");
@@ -43,5 +45,28 @@ router.post(
 
 router.post("/logout", protect, logout);
 router.get("/me", protect, getMe);
+
+router.post(
+  "/forgot-password",
+  [
+    body("email")
+      .isEmail()
+      .withMessage("A valid email is required")
+      .normalizeEmail(),
+  ],
+  validate,
+  forgotPassword,
+);
+
+router.post(
+  "/reset-password/:token",
+  [
+    body("newPassword")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters"),
+  ],
+  validate,
+  resetPassword,
+);
 
 module.exports = router;
