@@ -7,10 +7,11 @@ const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 
 const { notFound, errorHandler } = require("./middleware/errorHandler");
+const { stripeWebhook } = require("./controllers/paymentController");
 
 const app = express();
 
-// --- Security & parsing middleware ---
+// --- Security middleware ---
 app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(
   cors({
@@ -18,6 +19,16 @@ app.use(
     credentials: true,
   }),
 );
+
+// --- Stripe webhook MUST be registered with the raw body, BEFORE
+// express.json() runs below, or signature verification will fail. ---
+app.post(
+  "/api/payments/stripe/webhook",
+  express.raw({ type: "application/json" }),
+  stripeWebhook,
+);
+
+// --- Standard body/cookie parsing for everything else ---
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -52,8 +63,12 @@ app.use("/api/coupons", require("./routes/couponRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/admin/stats", require("./routes/adminStatsRoutes"));
 app.use("/api/ai", require("./routes/aiRoutes"));
-
 app.use("/api/upload", require("./routes/uploadRoutes"));
+// Note: /api/payments/stripe/webhook is already mounted above (raw body).
+// This mount covers the rest of the payment routes (chapa + stripe initialize/verify).
+app.use("/api/payments", require("./routes/paymentRoutes"));
+
+// --- 404 + centralized error handling (from middleware/errorHandler.js) ---
 app.use(notFound);
 app.use(errorHandler);
 
