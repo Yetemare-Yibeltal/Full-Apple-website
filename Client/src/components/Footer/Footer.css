@@ -1,0 +1,14 @@
+footer {
+  position: relative;
+}
+
+footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--prism-gradient);
+  opacity: 0.4;
+}
