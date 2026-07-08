@@ -26,7 +26,10 @@ const ORDER_STATUSES = [
 
 const PAYMENT_STATUSES = ["pending", "paid", "failed", "refunded"];
 
-const PAYMENT_METHODS = ["card", "cash_on_delivery"];
+// chapa covers Ethiopian channels (telebirr, CBE Birr/mobile banking, Amole,
+// HelloCash, and cards) through its own hosted checkout - stripe covers
+// international card payments separately.
+const PAYMENT_METHODS = ["chapa", "stripe", "cash_on_delivery"];
 
 const REVIEW_STATUSES = ["pending", "approved", "rejected"];
 
