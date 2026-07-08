@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --color-obsidian: #05060a;
+  --color-surface: rgba(255, 255, 255, 0.06);
+  --color-surface-border: rgba(255, 255, 255, 0.12);
+  --color-text-primary: #f5f6fa;
+  --color-text-muted: #9aa0ae;
+  --color-glow: #6ee7f9;
+
+  --prism-violet: #7c6cf6;
+  --prism-aqua: #4fd3c4;
+  --prism-rose: #ff7ac6;
+  --prism-gradient: linear-gradient(
+    90deg,
+    var(--prism-violet),
+    var(--prism-aqua),
+    var(--prism-rose)
+  );
+
+  --glass-blur: 20px;
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  --glass-radius: 20px;
+}
