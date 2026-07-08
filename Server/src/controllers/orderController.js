@@ -15,7 +15,7 @@ const TAX_RATE = 0; // set to e.g. 0.15 for 15% tax if applicable to your region
  * applies a coupon if provided, decrements stock, then clears the cart.
  */
 const createOrder = asyncHandler(async (req, res) => {
-  const { shippingAddress, paymentMethod = "card", couponCode } = req.body;
+ const { shippingAddress, paymentMethod = "chapa", couponCode } = req.body;
 
   const cart = await Cart.findOne({ user: req.user._id }).populate(
     "items.product",
