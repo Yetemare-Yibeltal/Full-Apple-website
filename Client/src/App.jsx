@@ -11,6 +11,10 @@ import Wishlist from './Pages/Wishlist/Wishlist';
 import Profile from './Pages/Account/Profile';
 import OrderHistory from './Pages/Account/OrderHistory';
 import Search from './Pages/Search/Search';
+
+<Route path="/register" element={<Register />} />
+import Register from './Pages/Auth/Register';
+
 import Support from './Pages/Support/Support';
 import Four04 from './Pages/Four04/Four04';
 import Login from './Pages/Auth/Login';
