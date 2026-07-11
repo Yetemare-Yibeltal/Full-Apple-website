@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import api from '../../lib/api'
 import GlassPanel from '../../components/ui/GlassPanel'
 import GradientText from '../../components/ui/GradientText'
 import Skeleton from '../../components/ui/Skeleton'
+import ProductCard from '../../components/Product/ProductCard'
 import SEO from '../../components/SEO'
-import { useWishlist } from '../../context/WishlistContext'
-import { useAuth } from '../../context/AuthContext'
-import { useToast } from '../../context/ToastContext'
 
 const sortOptions = [
   { value: '', label: 'Recommended' },
@@ -24,10 +22,6 @@ export default function CategoryPage () {
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 })
   const [sort, setSort] = useState('')
   const [loading, setLoading] = useState(true)
-
-  const { user } = useAuth()
-  const { isSaved, addToWishlist, removeFromWishlist } = useWishlist()
-  const { showToast } = useToast()
 
   useEffect(() => {
     api
@@ -57,17 +51,6 @@ export default function CategoryPage () {
         window.scrollTo({ top: 0, behavior: 'smooth' })
       })
       .finally(() => setLoading(false))
-  }
-
-  function toggleWishlist (e, productId) {
-    e.preventDefault()
-    if (!user) {
-      showToast('Sign in to save items', 'info')
-      return
-    }
-    isSaved(productId)
-      ? removeFromWishlist(productId)
-      : addToWishlist(productId)
   }
 
   const title = section?.title || category
@@ -112,39 +95,7 @@ export default function CategoryPage () {
                 </GlassPanel>
               ))
             : products.map(product => (
-                <Link key={product._id} to={`/product/${product.slug}`}>
-                  <GlassPanel className='p-4 h-full relative hover:border-white/30 transition-colors'>
-                    <button
-                      onClick={e => toggleWishlist(e, product._id)}
-                      className='absolute top-4 right-4 z-10 text-lg'
-                      aria-label='Toggle wishlist'
-                    >
-                      {isSaved(product._id) ? '♥' : '♡'}
-                    </button>
-                    <div className='h-44 rounded-lg bg-white/5 mb-4 flex items-center justify-center overflow-hidden'>
-                      {product.media?.[0]?.url ? (
-                        <img
-                          src={product.media[0].url}
-                          alt={product.name}
-                          className='object-contain h-full'
-                        />
-                      ) : (
-                        <span className='text-text-muted text-sm'>
-                          No image
-                        </span>
-                      )}
-                    </div>
-                    <h3 className='font-display font-semibold'>
-                      {product.name}
-                    </h3>
-                    <p className='text-text-muted text-sm mb-2'>
-                      {product.tagline}
-                    </p>
-                    <p className='font-mono text-glow'>
-                      From ${product.startingPrice}
-                    </p>
-                  </GlassPanel>
-                </Link>
+                <ProductCard key={product._id} product={product} />
               ))}
         </div>
 
