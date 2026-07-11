@@ -27,8 +27,8 @@ export default function ProductCard ({ product }) {
 
   return (
     <motion.div whileHover={{ y: -6 }} transition={{ duration: 0.25 }}>
-      <Link to={`/${product.category}/${product.slug}`}>
-        <GlassPanel className='p-5 relative group'>
+      <Link to={`/product/${product.slug}`}>
+        <GlassPanel className='p-5 relative group h-full'>
           <button
             onClick={toggleWishlist}
             className='absolute top-4 right-4 text-lg z-10'
@@ -51,7 +51,7 @@ export default function ProductCard ({ product }) {
 
           <h3 className='font-display font-semibold'>{product.name}</h3>
           <p className='text-text-muted text-sm mb-2'>{product.tagline}</p>
-          <p className='font-mono text-sm'>
+          <p className='font-mono text-sm text-glow'>
             From ${product.startingPrice ?? product.basePrice}
           </p>
         </GlassPanel>
