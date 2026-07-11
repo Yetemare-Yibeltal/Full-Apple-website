@@ -11,6 +11,7 @@ import Wishlist from './Pages/Wishlist/Wishlist';
 import Profile from './Pages/Account/Profile';
 import OrderHistory from './Pages/Account/OrderHistory';
 import Search from './Pages/Search/Search';
+import AdminAnalytics from './Pages/Admin/AdminAnalytics'
 
 <Route path="/register" element={<Register />} />
 import Register from './Pages/Auth/Register';
